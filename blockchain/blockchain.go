@@ -14,3 +14,16 @@ func NewBlockchain() *Blockchain {
 
 	return bc
 }
+
+func (bc *Blockchain) AddBlock(transactions []string) {
+
+	lastBlock := bc.Blocks[len(bc.Blocks)-1]
+
+	newBlock := block.NewBlock(
+		transactions,
+		lastBlock.Hash,
+		lastBlock.Index+1,
+	)
+
+	bc.Blocks = append(bc.Blocks, newBlock)
+}

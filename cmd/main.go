@@ -9,6 +9,13 @@ import (
 func main() {
 	bc := blockchain.NewBlockchain()
 
+	bc.AddBlock([]string{
+		"Alice -> Bob : 50",
+	})
+
+	bc.AddBlock([]string{
+		"Bob -> Charlie : 20",
+	})
 	fmt.Println("Blockchain created!")
 	fmt.Println()
 
