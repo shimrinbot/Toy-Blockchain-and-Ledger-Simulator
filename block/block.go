@@ -19,7 +19,7 @@ func NewBlock(transactions []string, previousHash string, index int) Block {
 		Nonce:        0,
 	}
 
-	block.Hash = CalculateHash(block)
-
+	//block.Hash = CalculateHash(block)
+	MineBlock(&block)
 	return block
 }
