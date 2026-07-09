@@ -1,19 +1,21 @@
 package blockchain
 
-import "toy-blockchain/block"
+import "toy-blockchain/block"	
 import "toy-blockchain/ledger"
 
 type Blockchain struct {
-	Blocks []block.Block
+	Blocks       []block.Block
+	PendingTxs   []ledger.Transaction
 }
 
 func NewBlockchain() *Blockchain {
 
-	bc := &Blockchain{}
+	genesis := block.NewGenesisBlock()
 
-	bc.Blocks = append(bc.Blocks, block.NewGenesisBlock())
-
-	return bc
+	return &Blockchain{
+	Blocks:     []block.Block{genesis},
+	PendingTxs: []ledger.Transaction{},
+}
 }
 
 func (bc *Blockchain) AddBlock(transactions []ledger.Transaction) {
@@ -27,4 +29,32 @@ func (bc *Blockchain) AddBlock(transactions []ledger.Transaction) {
 	)
 
 	bc.Blocks = append(bc.Blocks, newBlock)
+}
+
+func (bc *Blockchain) AddTransaction(tx ledger.Transaction) {
+
+	bc.PendingTxs = append(bc.PendingTxs, tx)
+
+}
+
+func (bc *Blockchain) MinePendingTransactions() {
+
+	if len(bc.PendingTxs) == 0 {
+		return
+	}
+
+	previousBlock := bc.Blocks[len(bc.Blocks)-1]
+
+	newBlock := block.NewBlock(
+		bc.PendingTxs,
+		previousBlock.Hash,
+		previousBlock.Index+1,
+	)
+
+	bc.Blocks = append(
+		bc.Blocks,
+		newBlock,
+	)
+
+	bc.PendingTxs = []ledger.Transaction{}
 }

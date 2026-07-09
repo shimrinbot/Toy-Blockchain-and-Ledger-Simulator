@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
-
+	"strconv"
 	"toy-blockchain/cli"
 )
 
@@ -31,6 +31,25 @@ func main() {
 
 	case "balances":
 		app.PrintBalances()
+		case "add":
+
+	if len(os.Args) < 5 {
+		fmt.Println("Usage: add sender receiver amount")
+		return
+	}
+
+	amount, _ := strconv.ParseFloat(os.Args[4],64)
+
+	app.AddTransaction(
+		os.Args[2],
+		os.Args[3],
+		amount,
+	)
+
+
+case "mine":
+
+	app.Mine()
 
 	default:
 		fmt.Println("Unknown command:", command)

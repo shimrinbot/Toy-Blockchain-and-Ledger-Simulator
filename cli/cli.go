@@ -50,3 +50,26 @@ func (c *CLI) PrintBalances() {
 	c.Ledger.PrintBalances()
 
 }
+
+func (c *CLI) AddTransaction(
+	sender string,
+	recipient string,
+	amount float64,
+) {
+
+	tx := ledger.Transaction{
+		Sender: sender,
+		Recipient: recipient,
+		Amount: amount,
+	}
+
+	c.Blockchain.AddTransaction(tx)
+
+	fmt.Println("Transaction added")
+}
+func (c *CLI) Mine() {
+
+	c.Blockchain.MinePendingTransactions()
+
+	fmt.Println("Block mined")
+}
