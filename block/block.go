@@ -1,6 +1,9 @@
 package block
 
-import "toy-blockchain/ledger"
+import (
+	"toy-blockchain/ledger"
+	"time"
+)
 
 type Block struct {
 	Index        int
@@ -15,7 +18,7 @@ func NewBlock(transactions []ledger.Transaction, previousHash string, index int)
 
 	block := Block{
 		Index:        index,
-		Timestamp:    0,
+		Timestamp:    time.Now().Unix(),
 		Transactions: transactions,
 		PreviousHash: previousHash,
 		Nonce:        0,
