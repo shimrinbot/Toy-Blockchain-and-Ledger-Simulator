@@ -45,17 +45,44 @@ func main() {
 
 	l.Faucet("Alice", 100)
 
-	l.ApplyTransaction(ledger.Transaction{
-		Sender:    "Alice",
-		Recipient: "Bob",
-		Amount:    50,
-	})
+	err := l.ApplyTransaction(ledger.Transaction{
+	Sender:    "Alice",
+	Recipient: "Bob",
+	Amount:    50,
+})
 
-	l.ApplyTransaction(ledger.Transaction{
+if err != nil {
+	fmt.Println(err)
+}
+
+		err = l.ApplyTransaction(ledger.Transaction{
 		Sender:    "Bob",
 		Recipient: "Charlie",
 		Amount:    20,
 	})
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	err = l.ApplyTransaction(ledger.Transaction{
+	Sender:    "Alice",
+	Recipient: "Charlie",
+	Amount:    500,
+})
+
+if err != nil {
+	fmt.Println(err)
+}
+
+err = l.ApplyTransaction(ledger.Transaction{
+	Sender:    "Bob",
+	Recipient: "Charlie",
+	Amount:    -10,
+})
+
+if err != nil {
+	fmt.Println(err)
+}
 
 	l.PrintBalances()
 }
