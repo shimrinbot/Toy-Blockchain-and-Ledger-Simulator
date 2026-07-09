@@ -1,9 +1,10 @@
-
 package ledger
+
 import (
 	"errors"
 	"fmt"
 )
+
 type Ledger struct {
 	Balances map[string]float64
 }

@@ -1,8 +1,8 @@
 package block
 
 import (
-	"toy-blockchain/ledger"
 	"time"
+	"toy-blockchain/ledger"
 )
 
 type Block struct {

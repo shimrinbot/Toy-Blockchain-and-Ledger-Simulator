@@ -2,102 +2,37 @@ package main
 
 import (
 	"fmt"
+	"os"
 
-	"toy-blockchain/blockchain"
-	"toy-blockchain/ledger"
+	"toy-blockchain/cli"
 )
 
 func main() {
 
-	bc := blockchain.NewBlockchain()
+	app := cli.NewCLI()
 
-	bc.AddBlock([]ledger.Transaction{
-		{
-			Sender:    "Alice",
-			Recipient: "Bob",
-			Amount:    50,
-		},
-	})
-
-	bc.AddBlock([]ledger.Transaction{
-		{
-			Sender:    "Bob",
-			Recipient: "Charlie",
-			Amount:    20,
-		},
-	})
-
-	fmt.Println("Blockchain created!")
-	fmt.Println()
-
-	for _, b := range bc.Blocks {
-		fmt.Println("Index:", b.Index)
-		fmt.Println("Timestamp:", b.Timestamp)
-		fmt.Println("Transactions:", b.Transactions)
-		fmt.Println("Previous Hash:", b.PreviousHash)
-		fmt.Println("Hash:", b.Hash)
-		fmt.Println("--------------------------------")
+	if len(os.Args) < 2 {
+		fmt.Println("Usage:")
+		fmt.Println("  print")
+		fmt.Println("  validate")
+		fmt.Println("  balances")
+		return
 	}
 
-	// ===== Ledger Test =====
+	command := os.Args[1]
 
-	l := ledger.NewLedger()
+	switch command {
 
-	l.Faucet("Alice", 100)
+	case "print":
+		app.PrintBlockchain()
 
-	err := l.ApplyTransaction(ledger.Transaction{
-	Sender:    "Alice",
-	Recipient: "Bob",
-	Amount:    50,
-})
+	case "validate":
+		app.ValidateBlockchain()
 
-if err != nil {
-	fmt.Println(err)
-}
+	case "balances":
+		app.PrintBalances()
 
-		err = l.ApplyTransaction(ledger.Transaction{
-		Sender:    "Bob",
-		Recipient: "Charlie",
-		Amount:    20,
-	})
-	if err != nil {
-		fmt.Println(err)
+	default:
+		fmt.Println("Unknown command:", command)
 	}
-
-	err = l.ApplyTransaction(ledger.Transaction{
-	Sender:    "Alice",
-	Recipient: "Charlie",
-	Amount:    500,
-})
-
-if err != nil {
-	fmt.Println(err)
-}
-
-err = l.ApplyTransaction(ledger.Transaction{
-	Sender:    "Bob",
-	Recipient: "Charlie",
-	Amount:    -10,
-})
-
-if err != nil {
-	fmt.Println(err)
-}
-
-	l.PrintBalances()
-
-	l.PrintBalances()
-
-bc.Blocks[1].Transactions[0].Amount = 5000
-
-bc.Blocks[1].Transactions[0].Amount = 5000
-
-// Validate the blockchain
-err = bc.Validate()
-
-if err != nil {
-	fmt.Println("Validation Failed:", err)
-} else {
-	fmt.Println("Blockchain is valid ✅")
-}
 }

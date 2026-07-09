@@ -7,6 +7,7 @@ import (
 
 	"toy-blockchain/block"
 )
+
 func (bc *Blockchain) Validate() error {
 
 	if len(bc.Blocks) == 0 {

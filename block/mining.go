@@ -5,6 +5,7 @@ import (
 	"strings"
 	"time"
 )
+
 const Difficulty = 3
 
 func MineBlock(block *Block) {
