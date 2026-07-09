@@ -14,9 +14,22 @@ type CLI struct {
 
 func NewCLI() *CLI {
 
+	bc, err := storage.LoadBlockchain("chain.json")
+
+	if err != nil {
+
+		bc = blockchain.NewBlockchain()
+
+		storage.SaveBlockchain(
+			bc,
+			"chain.json",
+		)
+	}
+
+
 	return &CLI{
-		Blockchain: blockchain.NewBlockchain(),
-		Ledger:     ledger.NewLedger(),
+		Blockchain: bc,
+		Ledger: ledger.NewLedger(),
 	}
 }
 func (c *CLI) PrintBlockchain() {
