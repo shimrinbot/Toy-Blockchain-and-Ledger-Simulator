@@ -85,4 +85,19 @@ if err != nil {
 }
 
 	l.PrintBalances()
+
+	l.PrintBalances()
+
+bc.Blocks[1].Transactions[0].Amount = 5000
+
+bc.Blocks[1].Transactions[0].Amount = 5000
+
+// Validate the blockchain
+err = bc.Validate()
+
+if err != nil {
+	fmt.Println("Validation Failed:", err)
+} else {
+	fmt.Println("Blockchain is valid ✅")
+}
 }
