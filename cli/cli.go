@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"toy-blockchain/blockchain"
 	"toy-blockchain/ledger"
+	"toy-blockchain/storage"
 )
 
 type CLI struct {
@@ -71,5 +72,18 @@ func (c *CLI) Mine() {
 
 	c.Blockchain.MinePendingTransactions()
 
-	fmt.Println("Block mined")
+
+	err := storage.SaveBlockchain(
+		c.Blockchain,
+		"chain.json",
+	)
+
+
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+
+	fmt.Println("Block mined and saved")
 }
