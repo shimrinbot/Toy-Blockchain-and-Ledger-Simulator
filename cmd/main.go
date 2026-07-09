@@ -4,18 +4,29 @@ import (
 	"fmt"
 
 	"toy-blockchain/blockchain"
+	"toy-blockchain/ledger"
 )
 
 func main() {
+
 	bc := blockchain.NewBlockchain()
 
-	bc.AddBlock([]string{
-		"Alice -> Bob : 50",
+	bc.AddBlock([]ledger.Transaction{
+		{
+			Sender:    "Alice",
+			Recipient: "Bob",
+			Amount:    50,
+		},
 	})
 
-	bc.AddBlock([]string{
-		"Bob -> Charlie : 20",
+	bc.AddBlock([]ledger.Transaction{
+		{
+			Sender:    "Bob",
+			Recipient: "Charlie",
+			Amount:    20,
+		},
 	})
+
 	fmt.Println("Blockchain created!")
 	fmt.Println()
 
@@ -25,5 +36,26 @@ func main() {
 		fmt.Println("Transactions:", b.Transactions)
 		fmt.Println("Previous Hash:", b.PreviousHash)
 		fmt.Println("Hash:", b.Hash)
+		fmt.Println("--------------------------------")
 	}
+
+	// ===== Ledger Test =====
+
+	l := ledger.NewLedger()
+
+	l.Faucet("Alice", 100)
+
+	l.ApplyTransaction(ledger.Transaction{
+		Sender:    "Alice",
+		Recipient: "Bob",
+		Amount:    50,
+	})
+
+	l.ApplyTransaction(ledger.Transaction{
+		Sender:    "Bob",
+		Recipient: "Charlie",
+		Amount:    20,
+	})
+
+	l.PrintBalances()
 }

@@ -1,15 +1,17 @@
 package block
 
+import "toy-blockchain/ledger"
+
 type Block struct {
 	Index        int
 	Timestamp    int64
-	Transactions []string
+	Transactions []ledger.Transaction
 	PreviousHash string
 	Nonce        int
 	Hash         string
 }
 
-func NewBlock(transactions []string, previousHash string, index int) Block {
+func NewBlock(transactions []ledger.Transaction, previousHash string, index int) Block {
 
 	block := Block{
 		Index:        index,

@@ -1,6 +1,7 @@
 package blockchain
 
 import "toy-blockchain/block"
+import "toy-blockchain/ledger"
 
 type Blockchain struct {
 	Blocks []block.Block
@@ -15,7 +16,7 @@ func NewBlockchain() *Blockchain {
 	return bc
 }
 
-func (bc *Blockchain) AddBlock(transactions []string) {
+func (bc *Blockchain) AddBlock(transactions []ledger.Transaction) {
 
 	lastBlock := bc.Blocks[len(bc.Blocks)-1]
 
