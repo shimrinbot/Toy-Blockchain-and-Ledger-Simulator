@@ -5,6 +5,7 @@ import (
 	"os"
 	"strconv"
 	"toy-blockchain/cli"
+	"toy-blockchain/block"
 )
 
 func main() {
@@ -20,6 +21,19 @@ func main() {
 	}
 
 	command := os.Args[1]
+
+	// Optional difficulty argument
+for i := 2; i < len(os.Args)-1; i++ {
+	if os.Args[i] == "--difficulty" {
+
+		level, err := strconv.Atoi(os.Args[i+1])
+
+		if err == nil {
+			block.SetDifficulty(level)
+			fmt.Println("Mining difficulty set to:", level)
+		}
+	}
+}
 
 	switch command {
 

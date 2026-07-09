@@ -2,6 +2,9 @@ package cli
 
 import (
 	"fmt"
+	"time"
+
+	"toy-blockchain/block"
 	"toy-blockchain/blockchain"
 	"toy-blockchain/ledger"
 	"toy-blockchain/storage"
@@ -17,34 +20,36 @@ func NewCLI() *CLI {
 	bc, err := storage.LoadBlockchain("chain.json")
 
 	if err != nil {
-
 		bc = blockchain.NewBlockchain()
 
-		storage.SaveBlockchain(
-			bc,
-			"chain.json",
-		)
+		err = storage.SaveBlockchain(bc, "chain.json")
+		if err != nil {
+			fmt.Println("Error creating blockchain:", err)
+		}
 	}
-
 
 	return &CLI{
 		Blockchain: bc,
-		Ledger: ledger.NewLedger(),
+		Ledger:     ledger.NewLedger(),
 	}
 }
+
 func (c *CLI) PrintBlockchain() {
 
 	fmt.Println("Blockchain:")
 
 	for _, b := range c.Blockchain.Blocks {
 
-		fmt.Println("----------------")
+		fmt.Println("--------------------------------")
 		fmt.Println("Index:", b.Index)
 		fmt.Println("Timestamp:", b.Timestamp)
 		fmt.Println("Transactions:", b.Transactions)
 		fmt.Println("Previous Hash:", b.PreviousHash)
 		fmt.Println("Hash:", b.Hash)
+		fmt.Println("Nonce:", b.Nonce)
 	}
+
+	fmt.Println("--------------------------------")
 }
 
 func (c *CLI) ValidateBlockchain() {
@@ -62,41 +67,53 @@ func (c *CLI) ValidateBlockchain() {
 func (c *CLI) PrintBalances() {
 
 	c.Ledger.PrintBalances()
-
 }
 
-func (c *CLI) AddTransaction(
-	sender string,
-	recipient string,
-	amount float64,
-) {
+func (c *CLI) AddTransaction(sender, recipient string, amount float64) {
 
 	tx := ledger.Transaction{
-		Sender: sender,
+		Sender:    sender,
 		Recipient: recipient,
-		Amount: amount,
+		Amount:    amount,
 	}
 
 	c.Blockchain.AddTransaction(tx)
 
-	fmt.Println("Transaction added")
-}
-func (c *CLI) Mine() {
-
-	c.Blockchain.MinePendingTransactions()
-
-
-	err := storage.SaveBlockchain(
-		c.Blockchain,
-		"chain.json",
-	)
-
-
+	err := storage.SaveBlockchain(c.Blockchain, "chain.json")
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println("Error saving transaction:", err)
 		return
 	}
 
+	fmt.Println("Transaction added and saved.")
+}
 
+func (c *CLI) Mine() {
+
+	if len(c.Blockchain.PendingTxs) == 0 {
+		fmt.Println("No pending transactions to mine.")
+		return
+	}
+
+	start := time.Now()
+
+	c.Blockchain.MinePendingTransactions()
+
+	duration := time.Since(start)
+
+	err := storage.SaveBlockchain(c.Blockchain, "chain.json")
+	if err != nil {
+		fmt.Println("Error saving blockchain:", err)
+		return
+	}
+
+	last := c.Blockchain.Blocks[len(c.Blockchain.Blocks)-1]
+
+	fmt.Println("--------------------------------")
 	fmt.Println("Block mined and saved")
+	fmt.Println("Difficulty :", block.Difficulty)
+	fmt.Println("Nonce      :", last.Nonce)
+	fmt.Println("Hash       :", last.Hash)
+	fmt.Println("Mining Time:", duration)
+	fmt.Println("--------------------------------")
 }

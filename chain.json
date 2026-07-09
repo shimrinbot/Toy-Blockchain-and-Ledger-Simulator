@@ -7,6 +7,20 @@
       "PreviousHash": "0000000000000000000000000000000000000000000000000000000000000000",
       "Nonce": 0,
       "Hash": "c6adee0cd75c8a8a88423ed4adec552a4ecc35253aaac7b85e1fc71376ef5d73"
+    },
+    {
+      "Index": 1,
+      "Timestamp": 1783585223,
+      "Transactions": [
+        {
+          "Sender": "Alice",
+          "Recipient": "Bob",
+          "Amount": 50
+        }
+      ],
+      "PreviousHash": "c6adee0cd75c8a8a88423ed4adec552a4ecc35253aaac7b85e1fc71376ef5d73",
+      "Nonce": 1757,
+      "Hash": "00069759c80e3643ac1a2e5fda069742308e1b2c8934dd0ab995e9fa6bfce2ea"
     }
   ],
   "PendingTxs": []

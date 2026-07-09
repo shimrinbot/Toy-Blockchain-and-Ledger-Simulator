@@ -8,6 +8,14 @@ import (
 
 var Difficulty = 3
 
+func SetDifficulty(level int) {
+
+	if level > 0 {
+		Difficulty = level
+	}
+
+}
+
 func MineBlock(block *Block) {
 
 	target := strings.Repeat("0", Difficulty)
