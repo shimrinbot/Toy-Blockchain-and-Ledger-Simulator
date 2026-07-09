@@ -51,7 +51,18 @@ case "mine":
 
 	app.Mine()
 
+case "help":
+
+	fmt.Println("Available Commands:")
+	fmt.Println("  add <sender> <receiver> <amount>")
+	fmt.Println("  mine")
+	fmt.Println("  print")
+	fmt.Println("  validate")
+	fmt.Println("  balances")
+	fmt.Println("  help")
+
 	default:
-		fmt.Println("Unknown command:", command)
+	fmt.Println("Unknown command:", command)
+	fmt.Println("Type 'help' to see available commands.")
 	}
 }

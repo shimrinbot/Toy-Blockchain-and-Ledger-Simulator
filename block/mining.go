@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-const Difficulty = 3
+var Difficulty = 3
 
 func MineBlock(block *Block) {
 
