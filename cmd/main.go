@@ -45,35 +45,45 @@ for i := 2; i < len(os.Args)-1; i++ {
 
 	case "balances":
 		app.PrintBalances()
-		case "add":
 
-	if len(os.Args) < 5 {
-		fmt.Println("Usage: add sender receiver amount")
-		return
-	}
+	case "faucet":
+		if len(os.Args) < 4 {
+			fmt.Println("Usage: faucet account amount")
+			return
+		}
+		amount, _ := strconv.ParseFloat(os.Args[3], 64)
+		app.Faucet(os.Args[2], amount)
 
-	amount, _ := strconv.ParseFloat(os.Args[4],64)
+	case "add":
 
-	app.AddTransaction(
-		os.Args[2],
-		os.Args[3],
-		amount,
-	)
+		if len(os.Args) < 5 {
+			fmt.Println("Usage: add sender receiver amount")
+			return
+		}
+
+		amount, _ := strconv.ParseFloat(os.Args[4], 64)
+
+		app.AddTransaction(
+			os.Args[2],
+			os.Args[3],
+			amount,
+		)
 
 
 case "mine":
 
 	app.Mine()
 
-case "help":
+	case "help":
 
-	fmt.Println("Available Commands:")
-	fmt.Println("  add <sender> <receiver> <amount>")
-	fmt.Println("  mine")
-	fmt.Println("  print")
-	fmt.Println("  validate")
-	fmt.Println("  balances")
-	fmt.Println("  help")
+		fmt.Println("Available Commands:")
+		fmt.Println("  faucet <account> <amount>")
+		fmt.Println("  add <sender> <receiver> <amount>")
+		fmt.Println("  mine")
+		fmt.Println("  print")
+		fmt.Println("  validate")
+		fmt.Println("  balances")
+		fmt.Println("  help")
 
 	default:
 	fmt.Println("Unknown command:", command)

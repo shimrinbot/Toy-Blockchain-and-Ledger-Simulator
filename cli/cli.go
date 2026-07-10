@@ -28,10 +28,24 @@ func NewCLI() *CLI {
 		}
 	}
 
-	return &CLI{
+	cli := &CLI{
 		Blockchain: bc,
 		Ledger:     ledger.NewLedger(),
 	}
+
+	// Rebuild ledger state
+	for _, b := range bc.Blocks {
+		for _, tx := range b.Transactions {
+			cli.Ledger.Balances[tx.Sender] -= tx.Amount
+			cli.Ledger.Balances[tx.Recipient] += tx.Amount
+		}
+	}
+	for _, tx := range bc.PendingTxs {
+		cli.Ledger.Balances[tx.Sender] -= tx.Amount
+		cli.Ledger.Balances[tx.Recipient] += tx.Amount
+	}
+
+	return cli
 }
 
 func (c *CLI) PrintBlockchain() {
@@ -77,9 +91,15 @@ func (c *CLI) AddTransaction(sender, recipient string, amount float64) {
 		Amount:    amount,
 	}
 
+	err := c.Ledger.ApplyTransaction(tx)
+	if err != nil {
+		fmt.Println("Transaction Failed:", err)
+		return
+	}
+
 	c.Blockchain.AddTransaction(tx)
 
-	err := storage.SaveBlockchain(c.Blockchain, "chain.json")
+	err = storage.SaveBlockchain(c.Blockchain, "chain.json")
 	if err != nil {
 		fmt.Println("Error saving transaction:", err)
 		return
@@ -116,4 +136,23 @@ func (c *CLI) Mine() {
 	fmt.Println("Hash       :", last.Hash)
 	fmt.Println("Mining Time:", duration)
 	fmt.Println("--------------------------------")
+}
+
+func (c *CLI) Faucet(account string, amount float64) {
+
+	tx := ledger.Transaction{
+		Sender:    "SYSTEM",
+		Recipient: account,
+		Amount:    amount,
+	}
+
+	c.Blockchain.AddTransaction(tx)
+
+	err := storage.SaveBlockchain(c.Blockchain, "chain.json")
+	if err != nil {
+		fmt.Println("Error saving faucet transaction:", err)
+		return
+	}
+
+	fmt.Println("Faucet added and saved. (Pending to be mined)")
 }

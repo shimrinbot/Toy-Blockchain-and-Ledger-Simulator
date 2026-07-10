@@ -25,11 +25,13 @@ func (l *Ledger) ApplyTransaction(tx Transaction) error {
 		return errors.New("amount must be greater than zero")
 	}
 
-	if l.Balances[tx.Sender] < tx.Amount {
-		return errors.New("insufficient balance")
+	if tx.Sender != "SYSTEM" {
+		if l.Balances[tx.Sender] < tx.Amount {
+			return errors.New("insufficient balance")
+		}
+		l.Balances[tx.Sender] -= tx.Amount
 	}
 
-	l.Balances[tx.Sender] -= tx.Amount
 	l.Balances[tx.Recipient] += tx.Amount
 
 	return nil
