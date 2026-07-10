@@ -2,6 +2,7 @@ package cli
 
 import (
 	"fmt"
+	"os"
 	"time"
 
 	"toy-blockchain/block"
@@ -20,11 +21,17 @@ func NewCLI() *CLI {
 	bc, err := storage.LoadBlockchain("chain.json")
 
 	if err != nil {
-		bc = blockchain.NewBlockchain()
+		if os.IsNotExist(err) {
+			bc = blockchain.NewBlockchain()
 
-		err = storage.SaveBlockchain(bc, "chain.json")
-		if err != nil {
-			fmt.Println("Error creating blockchain:", err)
+			err = storage.SaveBlockchain(bc, "chain.json")
+			if err != nil {
+				fmt.Println("Error creating blockchain:", err)
+			}
+		} else {
+			fmt.Printf("CRITICAL: Failed to load existing blockchain: %v\n", err)
+			fmt.Println("Please fix chain.json or delete it to start fresh. Exiting to prevent data loss.")
+			os.Exit(1)
 		}
 	}
 
@@ -36,13 +43,15 @@ func NewCLI() *CLI {
 	// Rebuild ledger state
 	for _, b := range bc.Blocks {
 		for _, tx := range b.Transactions {
-			cli.Ledger.Balances[tx.Sender] -= tx.Amount
-			cli.Ledger.Balances[tx.Recipient] += tx.Amount
+			if err := cli.Ledger.ApplyTransaction(tx); err != nil {
+				fmt.Printf("Warning: invalid transaction found in chain history (Block %d): %v\n", b.Index, err)
+			}
 		}
 	}
 	for _, tx := range bc.PendingTxs {
-		cli.Ledger.Balances[tx.Sender] -= tx.Amount
-		cli.Ledger.Balances[tx.Recipient] += tx.Amount
+		if err := cli.Ledger.ApplyTransaction(tx); err != nil {
+			fmt.Printf("Warning: invalid pending transaction found: %v\n", err)
+		}
 	}
 
 	return cli
@@ -144,6 +153,11 @@ func (c *CLI) Faucet(account string, amount float64) {
 		Sender:    "SYSTEM",
 		Recipient: account,
 		Amount:    amount,
+	}
+
+	if err := c.Ledger.ApplyTransaction(tx); err != nil {
+		fmt.Println("Faucet Failed:", err)
+		return
 	}
 
 	c.Blockchain.AddTransaction(tx)

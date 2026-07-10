@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"toy-blockchain/block"
+	"toy-blockchain/ledger"
 )
 
 func (bc *Blockchain) Validate() error {
@@ -14,6 +15,7 @@ func (bc *Blockchain) Validate() error {
 		return errors.New("blockchain is empty")
 	}
 
+	tempLedger := ledger.NewLedger()
 	target := strings.Repeat("0", block.Difficulty)
 
 	for i := 0; i < len(bc.Blocks); i++ {
@@ -25,6 +27,13 @@ func (bc *Blockchain) Validate() error {
 
 		if current.Hash != calculatedHash {
 			return fmt.Errorf("invalid hash at block %d", i)
+		}
+
+		// Validate all transactions in this block
+		for _, tx := range current.Transactions {
+			if err := tempLedger.ApplyTransaction(tx); err != nil {
+				return fmt.Errorf("invalid transaction in block %d: %v", i, err)
+			}
 		}
 
 		// Skip previous hash check for Genesis Block
@@ -42,6 +51,13 @@ func (bc *Blockchain) Validate() error {
 		// Check Proof of Work
 		if !strings.HasPrefix(current.Hash, target) {
 			return fmt.Errorf("proof of work failed at block %d", i)
+		}
+	}
+
+	// Validate pending transactions
+	for _, tx := range bc.PendingTxs {
+		if err := tempLedger.ApplyTransaction(tx); err != nil {
+			return fmt.Errorf("invalid pending transaction: %v", err)
 		}
 	}
 
