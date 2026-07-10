@@ -44,6 +44,12 @@ Print the blockchain:
 go run ./cmd print
 ```
 
+Get initial funds from the faucet:
+
+```bash
+go run ./cmd faucet Alice 100
+```
+
 Add a transaction:
 
 ```bash
