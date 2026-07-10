@@ -105,6 +105,20 @@
       "PreviousHash": "000a7632d6728fa68db5cd6a3c912838e3cd4f712327b0a5375e8f8bc299d573",
       "Nonce": 8615,
       "Hash": "000e643505c9d26807d1f20edee2ab026ac4b25c5b805225d21a41946a75e358"
+    },
+    {
+      "Index": 8,
+      "Timestamp": 1783665183,
+      "Transactions": [
+        {
+          "Sender": "Bob",
+          "Recipient": "Charlie",
+          "Amount": 10
+        }
+      ],
+      "PreviousHash": "000e643505c9d26807d1f20edee2ab026ac4b25c5b805225d21a41946a75e358",
+      "Nonce": 1672,
+      "Hash": "00049cad4e33df282c6fe13081c00063ed00a92ff4e5434b3fb32e59cce8102e"
     }
   ],
   "PendingTxs": []

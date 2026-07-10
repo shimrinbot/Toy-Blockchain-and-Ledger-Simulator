@@ -1,0 +1,12 @@
+# Local blockchain database
+chain.json
+
+# Go compiled binaries
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binaries
+*.test
