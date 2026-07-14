@@ -7,12 +7,13 @@ This project is a simple blockchain implementation written in Go. It demonstrate
 ## Features
 
 - Block creation
-- SHA-256 hashing
-- Proof of Work mining
-- Transaction handling
-- Blockchain validation
+- SHA-256 hashing & Merkle Trees
+- Proof of Work mining (Concurrent Goroutines)
+- Difficulty Retargeting
+- Transaction handling (ECDSA Signatures & Nonces)
+- Blockchain validation (Longest Valid Chain sync)
 - Ledger with balances
-- JSON persistence
+- JSON persistence (AES-GCM Encrypted Wallet)
 - Command-line interface
 - Unit testing
 
@@ -37,6 +38,9 @@ go mod tidy
 ```
 
 ## Running
+
+> [!IMPORTANT]
+> **Wallet Encryption**: The first time you run any command, the CLI will prompt you to create a password. It uses this password to generate an AES-GCM encrypted `wallet.json`. You must enter this password every time you run a command to unlock your digital identity!
 
 Print the blockchain:
 
