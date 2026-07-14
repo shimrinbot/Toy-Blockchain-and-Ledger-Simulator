@@ -1,5 +1,6 @@
-# Local blockchain database
+# Local blockchain database and encrypted keys
 chain.json
+wallet.json
 
 # Go compiled binaries
 *.exe

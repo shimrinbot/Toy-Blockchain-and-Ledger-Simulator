@@ -1,10 +1,12 @@
 package cli
 
 import (
+	"bufio"
 	"crypto/ecdsa"
 	"encoding/hex"
 	"fmt"
 	"os"
+	"strings"
 	"time"
 
 	"toy-blockchain/block"
@@ -18,6 +20,13 @@ type CLI struct {
 	Blockchain *blockchain.Blockchain
 	Ledger     *ledger.Ledger
 	Wallet     *ecdsa.PrivateKey
+}
+
+func getPassword(prompt string) string {
+	fmt.Print(prompt)
+	reader := bufio.NewReader(os.Stdin)
+	password, _ := reader.ReadString('\n')
+	return strings.TrimSpace(password)
 }
 
 func NewCLI() *CLI {
@@ -40,11 +49,22 @@ func NewCLI() *CLI {
 	}
 
 	// Load or create wallet
-	privKey, err := wallet.LoadWallet("wallet.json")
+	password := getPassword("Enter wallet password: ")
+
+	privKey, err := wallet.LoadWallet("wallet.json", password)
 	if err != nil {
-		fmt.Println("No wallet found, generating a new one...")
-		privKey, _ = wallet.GenerateKeyPair()
-		wallet.SaveWallet(privKey, "wallet.json")
+		if os.IsNotExist(err) {
+			fmt.Println("No wallet found, generating a new one...")
+			privKey, _ = wallet.GenerateKeyPair()
+			err = wallet.SaveWallet(privKey, "wallet.json", password)
+			if err != nil {
+				fmt.Println("Failed to save wallet:", err)
+				os.Exit(1)
+			}
+		} else {
+			fmt.Println("Failed to load wallet:", err)
+			os.Exit(1)
+		}
 	}
 
 	pubKeyBytes := wallet.PublicKeyToBytes(&privKey.PublicKey)
