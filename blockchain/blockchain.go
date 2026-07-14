@@ -1,7 +1,10 @@
 package blockchain
 
-import "toy-blockchain/block"	
-import "toy-blockchain/ledger"
+import (
+	"fmt"
+	"toy-blockchain/block"
+	"toy-blockchain/ledger"
+)
 
 type Blockchain struct {
 	Blocks       []block.Block
@@ -50,6 +53,17 @@ func (bc *Blockchain) MinePendingTransactions() {
 		previousBlock.Hash,
 		previousBlock.Index+1,
 	)
+
+	timeDiff := newBlock.Timestamp - previousBlock.Timestamp
+	fmt.Printf("Time since last block: %ds (Target: ~5s)\n", timeDiff)
+
+	if timeDiff < 5 {
+		block.Difficulty++
+		fmt.Printf("Adjusting difficulty UP to %d for the next block.\n", block.Difficulty)
+	} else if timeDiff > 10 && block.Difficulty > 1 {
+		block.Difficulty--
+		fmt.Printf("Adjusting difficulty DOWN to %d for the next block.\n", block.Difficulty)
+	}
 
 	bc.Blocks = append(
 		bc.Blocks,

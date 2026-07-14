@@ -1,6 +1,8 @@
 package cli
 
 import (
+	"crypto/ecdsa"
+	"encoding/hex"
 	"fmt"
 	"os"
 	"time"
@@ -9,11 +11,13 @@ import (
 	"toy-blockchain/blockchain"
 	"toy-blockchain/ledger"
 	"toy-blockchain/storage"
+	"toy-blockchain/wallet"
 )
 
 type CLI struct {
 	Blockchain *blockchain.Blockchain
 	Ledger     *ledger.Ledger
+	Wallet     *ecdsa.PrivateKey
 }
 
 func NewCLI() *CLI {
@@ -35,9 +39,21 @@ func NewCLI() *CLI {
 		}
 	}
 
+	// Load or create wallet
+	privKey, err := wallet.LoadWallet("wallet.json")
+	if err != nil {
+		fmt.Println("No wallet found, generating a new one...")
+		privKey, _ = wallet.GenerateKeyPair()
+		wallet.SaveWallet(privKey, "wallet.json")
+	}
+
+	pubKeyBytes := wallet.PublicKeyToBytes(&privKey.PublicKey)
+	fmt.Printf("CLI loaded with address: %s\n", hex.EncodeToString(pubKeyBytes))
+
 	cli := &CLI{
 		Blockchain: bc,
 		Ledger:     ledger.NewLedger(),
+		Wallet:     privKey,
 	}
 
 	// Rebuild ledger state
@@ -92,15 +108,25 @@ func (c *CLI) PrintBalances() {
 	c.Ledger.PrintBalances()
 }
 
-func (c *CLI) AddTransaction(sender, recipient string, amount float64) {
+func (c *CLI) AddTransaction(recipient string, amount float64) {
+	pubKeyBytes := wallet.PublicKeyToBytes(&c.Wallet.PublicKey)
+	senderAddress := hex.EncodeToString(pubKeyBytes)
 
 	tx := ledger.Transaction{
-		Sender:    sender,
+		Sender:    senderAddress,
 		Recipient: recipient,
 		Amount:    amount,
+		PublicKey: pubKeyBytes,
 	}
 
-	err := c.Ledger.ApplyTransaction(tx)
+	sig, err := wallet.Sign(c.Wallet, tx.Hash())
+	if err != nil {
+		fmt.Println("Failed to sign transaction:", err)
+		return
+	}
+	tx.Signature = sig
+
+	err = c.Ledger.ApplyTransaction(tx)
 	if err != nil {
 		fmt.Println("Transaction Failed:", err)
 		return
@@ -169,4 +195,22 @@ func (c *CLI) Faucet(account string, amount float64) {
 	}
 
 	fmt.Println("Faucet added and saved. (Pending to be mined)")
+}
+
+func (c *CLI) Sync(filename string) {
+	competingChain, err := storage.LoadBlockchain(filename)
+	if err != nil {
+		fmt.Println("Failed to load competing chain from", filename, ":", err)
+		return
+	}
+
+	resolved := c.Blockchain.ResolveConflict(competingChain)
+	if resolved {
+		err = storage.SaveBlockchain(c.Blockchain, "chain.json")
+		if err != nil {
+			fmt.Println("Error saving new chain:", err)
+		} else {
+			fmt.Println("Successfully synced and updated local chain.json.")
+		}
+	}
 }

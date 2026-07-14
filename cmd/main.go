@@ -56,30 +56,36 @@ for i := 2; i < len(os.Args)-1; i++ {
 
 	case "add":
 
-		if len(os.Args) < 5 {
-			fmt.Println("Usage: add sender receiver amount")
+		if len(os.Args) < 4 {
+			fmt.Println("Usage: add receiver amount")
 			return
 		}
 
-		amount, _ := strconv.ParseFloat(os.Args[4], 64)
+		amount, _ := strconv.ParseFloat(os.Args[3], 64)
 
 		app.AddTransaction(
 			os.Args[2],
-			os.Args[3],
 			amount,
 		)
 
 
-case "mine":
+	case "mine":
+		app.Mine()
 
-	app.Mine()
+	case "sync":
+		if len(os.Args) < 3 {
+			fmt.Println("Usage: sync <filename>")
+			return
+		}
+		app.Sync(os.Args[2])
 
 	case "help":
 
 		fmt.Println("Available Commands:")
 		fmt.Println("  faucet <account> <amount>")
-		fmt.Println("  add <sender> <receiver> <amount>")
+		fmt.Println("  add <receiver> <amount>")
 		fmt.Println("  mine")
+		fmt.Println("  sync <filename>")
 		fmt.Println("  print")
 		fmt.Println("  validate")
 		fmt.Println("  balances")

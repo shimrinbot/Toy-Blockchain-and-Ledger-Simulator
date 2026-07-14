@@ -9,10 +9,10 @@ import (
 func CalculateHash(block Block) string {
 
 	record := fmt.Sprintf(
-		"%d%d%v%s%d",
+		"%d%d%s%s%d",
 		block.Index,
 		block.Timestamp,
-		block.Transactions,
+		block.MerkleRoot,
 		block.PreviousHash,
 		block.Nonce,
 	)
