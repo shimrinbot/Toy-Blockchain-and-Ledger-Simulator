@@ -19,7 +19,7 @@ func TestValidBlockchain(t *testing.T) {
 
 	bc.AddTransaction(tx)
 
-	bc.MinePendingTransactions()
+	bc.MinePendingTransactions("Miner")
 
 
 	err := bc.Validate()
@@ -45,7 +45,7 @@ func TestTamperedBlockchain(t *testing.T) {
 
 	bc.AddTransaction(tx)
 
-	bc.MinePendingTransactions()
+	bc.MinePendingTransactions("Miner")
 
 
 	// Modify block data after mining
