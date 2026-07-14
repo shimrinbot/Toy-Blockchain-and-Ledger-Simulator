@@ -8,12 +8,14 @@ import (
 )
 
 type Ledger struct {
-	Balances map[string]float64
+	Balances  map[string]float64
+	Sequences map[string]int
 }
 
 func NewLedger() *Ledger {
 	return &Ledger{
-		Balances: make(map[string]float64),
+		Balances:  make(map[string]float64),
+		Sequences: make(map[string]int),
 	}
 }
 
@@ -29,6 +31,12 @@ func (l *Ledger) ApplyTransaction(tx Transaction) error {
 	if tx.Sender != "SYSTEM" {
 		// --- NEW SECURITY ENFORCEMENT ---
 		
+		// 0. REPLAY ATTACK PREVENTION
+		expectedSequence := l.Sequences[tx.Sender] + 1
+		if tx.Sequence != expectedSequence {
+			return fmt.Errorf("transaction rejected: invalid sequence (expected %d, got %d)", expectedSequence, tx.Sequence)
+		}
+
 		// 1. Ensure the transaction actually has a public key attached
 		if len(tx.PublicKey) == 0 {
 			return errors.New("transaction rejected: missing public key")
@@ -59,6 +67,9 @@ func (l *Ledger) ApplyTransaction(tx Transaction) error {
 			return errors.New("insufficient balance")
 		}
 		l.Balances[tx.Sender] -= tx.Amount
+		
+		// Update their sequence to prevent this tx from being used again
+		l.Sequences[tx.Sender] = tx.Sequence
 	}
 
 	l.Balances[tx.Recipient] += tx.Amount

@@ -112,10 +112,14 @@ func (c *CLI) AddTransaction(recipient string, amount float64) {
 	pubKeyBytes := wallet.PublicKeyToBytes(&c.Wallet.PublicKey)
 	senderAddress := hex.EncodeToString(pubKeyBytes)
 
+	// Fetch the next valid sequence for our wallet from the ledger
+	nextSequence := c.Ledger.Sequences[senderAddress] + 1
+
 	tx := ledger.Transaction{
 		Sender:    senderAddress,
 		Recipient: recipient,
 		Amount:    amount,
+		Sequence:  nextSequence,
 		PublicKey: pubKeyBytes,
 	}
 

@@ -10,6 +10,7 @@ type Transaction struct {
 	Sender    string  
 	Recipient string
 	Amount    float64
+	Sequence  int     // NEW: Prevents replay attacks!
 	
 	// --- NEW SECURITY FIELDS ---
 	PublicKey []byte 
@@ -22,11 +23,13 @@ func (t *Transaction) Hash() []byte {
 		Sender    string
 		Recipient string
 		Amount    float64
+		Sequence  int
 		PublicKey []byte
 	}{
 		Sender:    t.Sender,
 		Recipient: t.Recipient,
 		Amount:    t.Amount,
+		Sequence:  t.Sequence,
 		PublicKey: t.PublicKey,
 	}
 
