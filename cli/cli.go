@@ -148,15 +148,12 @@ func (c *CLI) AddTransaction(recipient string, amount float64) {
 }
 
 func (c *CLI) Mine() {
-
-	if len(c.Blockchain.PendingTxs) == 0 {
-		fmt.Println("No pending transactions to mine.")
-		return
-	}
+	pubKeyBytes := wallet.PublicKeyToBytes(&c.Wallet.PublicKey)
+	minerAddress := hex.EncodeToString(pubKeyBytes)
 
 	start := time.Now()
 
-	c.Blockchain.MinePendingTransactions()
+	c.Blockchain.MinePendingTransactions(minerAddress)
 
 	duration := time.Since(start)
 
@@ -175,30 +172,6 @@ func (c *CLI) Mine() {
 	fmt.Println("Hash       :", last.Hash)
 	fmt.Println("Mining Time:", duration)
 	fmt.Println("--------------------------------")
-}
-
-func (c *CLI) Faucet(account string, amount float64) {
-
-	tx := ledger.Transaction{
-		Sender:    "SYSTEM",
-		Recipient: account,
-		Amount:    amount,
-	}
-
-	if err := c.Ledger.ApplyTransaction(tx); err != nil {
-		fmt.Println("Faucet Failed:", err)
-		return
-	}
-
-	c.Blockchain.AddTransaction(tx)
-
-	err := storage.SaveBlockchain(c.Blockchain, "chain.json")
-	if err != nil {
-		fmt.Println("Error saving faucet transaction:", err)
-		return
-	}
-
-	fmt.Println("Faucet added and saved. (Pending to be mined)")
 }
 
 func (c *CLI) Sync(filename string) {

@@ -42,17 +42,9 @@ for i := 2; i < len(os.Args)-1; i++ {
 
 	case "validate":
 		app.ValidateBlockchain()
-
+		
 	case "balances":
 		app.PrintBalances()
-
-	case "faucet":
-		if len(os.Args) < 4 {
-			fmt.Println("Usage: faucet account amount")
-			return
-		}
-		amount, _ := strconv.ParseFloat(os.Args[3], 64)
-		app.Faucet(os.Args[2], amount)
 
 	case "add":
 
@@ -82,7 +74,6 @@ for i := 2; i < len(os.Args)-1; i++ {
 	case "help":
 
 		fmt.Println("Available Commands:")
-		fmt.Println("  faucet <account> <amount>")
 		fmt.Println("  add <receiver> <amount>")
 		fmt.Println("  mine")
 		fmt.Println("  sync <filename>")

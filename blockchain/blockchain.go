@@ -40,11 +40,16 @@ func (bc *Blockchain) AddTransaction(tx ledger.Transaction) {
 
 }
 
-func (bc *Blockchain) MinePendingTransactions() {
+func (bc *Blockchain) MinePendingTransactions(minerAddress string) {
 
-	if len(bc.PendingTxs) == 0 {
-		return
+	rewardTx := ledger.Transaction{
+		Sender:    "SYSTEM",
+		Recipient: minerAddress,
+		Amount:    50, // Fixed block reward
 	}
+
+	// Prepend the mining reward to the list of pending transactions
+	bc.PendingTxs = append([]ledger.Transaction{rewardTx}, bc.PendingTxs...)
 
 	previousBlock := bc.Blocks[len(bc.Blocks)-1]
 

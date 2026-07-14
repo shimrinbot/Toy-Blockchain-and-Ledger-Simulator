@@ -44,19 +44,22 @@ Print the blockchain:
 go run ./cmd print
 ```
 
-Get initial funds from the faucet:
+Mine a block (this will grant your wallet 50 coins as a mining reward!):
 
 ```bash
-go run ./cmd faucet Alice 100
+go run ./cmd mine
 ```
+> [!NOTE]  
+> **How do I get money?**  
+> We removed the `faucet` command to prevent infinite money glitches. Now, just like real Bitcoin, the *only* way to get money is to mine it! When you run the `mine` command, the system automatically creates a special "Coinbase" transaction that grants your public key `50` coins as a reward for expending CPU power to secure the network.
 
-Add a transaction:
+Add a transaction (sending money to another address):
 
 ```bash
-go run ./cmd add Alice Bob 50
+go run ./cmd add Bob 50
 ```
 
-Mine a block:
+Mine the transaction into the blockchain:
 
 ```bash
 go run ./cmd mine
@@ -72,6 +75,12 @@ View balances:
 
 ```bash
 go run ./cmd balances
+```
+
+Sync with a competing chain (Fork Resolution):
+
+```bash
+go run ./cmd sync other_chain.json
 ```
 
 Run all tests:
